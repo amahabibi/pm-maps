@@ -5,7 +5,7 @@ export default async function ManagePage() {
   const locations = await getAllLocations();
 
   return (
-    <main className="p-8 max-w-6xl mx-auto bg-white text-black dark:bg-zinc-900 dark:text-white min-h-screen">
+    <main className="p-1 max-w-6xl mx-auto bg-white text-black dark:bg-zinc-900 dark:text-white min-h-screen">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Zarządzaj adresami</h1>
         <Link href="/" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">

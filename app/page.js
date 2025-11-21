@@ -16,7 +16,7 @@ export default async function Home({ searchParams }) {
   const allPMs = [...new Set([...PM_LIST, ...existingPMs])].sort();
 
   return (
-    <main className="p-8 max-w-4xl mx-auto bg-white text-black dark:bg-zinc-900 dark:text-white min-h-screen">
+    <main className="p-1 max-w-4xl mx-auto bg-white text-black dark:bg-zinc-900 dark:text-white min-h-screen">
       
       <div className="relative mb-8">
         <div className="absolute right-0 top-0">
@@ -50,11 +50,11 @@ export default async function Home({ searchParams }) {
 
             <label className="block">
               <span className="text-sm font-medium">Adres</span>
-              <input type="text" name="address" placeholder="10 Downing Street" className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" required />
+              <input type="text" name="address"  className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" required />
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium">telefon</span>
+              <span className="text-sm font-medium">Telefon</span>
               <input type="tel" name="phone" className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" />
             </label>
 
