@@ -12,7 +12,7 @@ export default async function EditPage({ params }) {
     return <div className="p-8">Location not found</div>;
   }
 
-  const PM_LIST = ['Alice', 'Bob', 'Charlie', 'Diana']; 
+  const PM_LIST = ['Igor Panchuk', 'Aleksander Brzozowski'];
 
   return (
     <main className="p-8 max-w-2xl mx-auto bg-white text-black dark:bg-zinc-900 dark:text-white min-h-screen">

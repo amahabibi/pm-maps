@@ -60,21 +60,32 @@ export async function getUniquePMs() {
   return result.rows.map(row => row.pm_name);
 }
 
-// 1. Fetch a single location by ID for the Edit Form
-export async function getLocationById(id) {
-  const result = await db.execute({
-    sql: 'SELECT * FROM locations WHERE id = ?',
-    args: [id]
-  });
-  
-  if (result.rows.length === 0) return null;
-  return { ...result.rows[0] }; // Sanitize to plain object
+export async function getAllLocations() {
+  try {
+    const result = await db.execute('SELECT * FROM locations ORDER BY created_at DESC');
+    
+    // POPRAWKA: Używamy JSON.parse(JSON.stringify(...)) aby wyczyścić "brudy" z obiektu Row
+    return JSON.parse(JSON.stringify(result.rows));
+  } catch (e) {
+    console.error("Błąd pobierania lokalizacji:", e);
+    return [];
+  }
 }
 
-// 2. Fetch ALL locations for the management list
-export async function getAllLocations() {
-  const result = await db.execute('SELECT * FROM locations ORDER BY created_at DESC');
-  return result.rows.map(row => ({ ...row }));
+export async function getLocationById(id) {
+  try {
+    const result = await db.execute({
+      sql: 'SELECT * FROM locations WHERE id = ?',
+      args: [id]
+    });
+    
+    if (result.rows.length === 0) return null;
+    
+    // POPRAWKA: Tutaj też czyścimy obiekt
+    return JSON.parse(JSON.stringify(result.rows[0]));
+  } catch (e) {
+    return null;
+  }
 }
 
 // 3. Update an existing location
