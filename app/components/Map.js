@@ -47,27 +47,26 @@ export default function Map({ locations }) {
         {isFullscreen ? 'Exit Fullscreen' : '⛶ Fullscreen'}
       </button>
 
-      <MapContainer 
-        center={center} 
-        zoom={13} 
-        style={{ height: '100%', width: '100%' }} // Map always fills the parent div
-      >
+      <MapContainer center={center} zoom={13} style={{ height: '100%', width: '100%' }}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         />
-
-        {/* Helper to fix gray areas on resize */}
         <MapResizer isFullscreen={isFullscreen} />
 
         {locations.map((loc) => (
           <Marker key={loc.id} position={[loc.latitude, loc.longitude]}>
             <Popup>
+              {/* 👇 Show Shop Name prominently */}
+              <strong className="text-lg">{loc.shop_name}</strong><br />
+              {/* 👇 Show Client */}
+              <span className="text-xs font-bold text-gray-500 uppercase">{loc.client}</span>
+              <hr className="my-1 border-gray-300"/>
+              
               <strong>{loc.pm_name}</strong><br />
-              {loc.address}<br />
-              {loc.city && <span className="text-sm font-semibold">{loc.city}<br /></span>}
-              {loc.phone}<br />
-              <em className="text-sm text-gray-600">{loc.comment}</em>
+              {loc.city}, {loc.address}<br />
+              {loc.phone && <span className="block mt-1">📞 {loc.phone}</span>}
+              {loc.comment && <em className="block mt-1 text-gray-600 border-l-2 border-gray-300 pl-2">{loc.comment}</em>}
             </Popup>
           </Marker>
         ))}

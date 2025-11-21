@@ -21,6 +21,8 @@ export default async function ManagePage() {
           <thead>
             <tr className="border-b dark:border-zinc-700">
               <th className="p-4">Manager</th>
+              <th className="p-4">Klient</th>        
+              <th className="p-4">Nazwa punktu</th>  
               <th className="p-4">Miaso</th>
               <th className="p-4">Adres</th>
               <th className="p-4">Telefon</th>
@@ -31,6 +33,8 @@ export default async function ManagePage() {
             {locations.map((loc) => (
               <tr key={loc.id} className="border-b dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-800">
                 <td className="p-4 font-medium">{loc.pm_name}</td>
+                <td className="p-4">{loc.client}</td>    
+                <td className="p-4">{loc.shop_name}</td>  
                 <td className="p-4">{loc.city}</td>
                 <td className="p-4">{loc.address}</td>
                 <td className="p-4">{loc.phone}</td>
@@ -41,7 +45,6 @@ export default async function ManagePage() {
                   >
                     Zmień
                   </Link>
-                  
                   <form action={deleteLocation}>
                     <input type="hidden" name="id" value={loc.id} />
                     <button type="submit" className="bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 text-sm">

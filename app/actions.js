@@ -6,12 +6,13 @@ import { redirect } from 'next/navigation';
 
 export async function addLocation(formData) {
   const pm_name = formData.get('pm_name');
+  const client = formData.get('client');           // <--- NEW
+  const shop_name = formData.get('shop_name');     // <--- NEW
   const address = formData.get('address');
-  const city = formData.get('city'); // <--- New Field
+  const city = formData.get('city');
   const comment = formData.get('comment');
   const phone = formData.get('phone');
 
-  // Combine address + city for better geocoding results
   const searchParams = `${address}, ${city}`; 
   
   const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchParams)}`, {
@@ -27,11 +28,11 @@ export async function addLocation(formData) {
   const lon = geoData[0].lon;
 
   try {
-    // Update SQL to include city
+    // Added client and shop_name to SQL
     await db.execute({
-      sql: `INSERT INTO locations (pm_name, address, city, latitude, longitude, comment, phone)
-            VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      args: [pm_name, address, city, lat, lon, comment, phone]
+      sql: `INSERT INTO locations (pm_name, client, shop_name, address, city, latitude, longitude, comment, phone)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [pm_name, client, shop_name, address, city, lat, lon, comment, phone]
     });
   } catch (e) {
     console.error("Database Error:", e);
@@ -64,8 +65,6 @@ export async function getUniquePMs() {
 export async function getAllLocations() {
   try {
     const result = await db.execute('SELECT * FROM locations ORDER BY created_at DESC');
-    
-    // POPRAWKA: Używamy JSON.parse(JSON.stringify(...)) aby wyczyścić "brudy" z obiektu Row
     return JSON.parse(JSON.stringify(result.rows));
   } catch (e) {
     console.error("Błąd pobierania lokalizacji:", e);
@@ -93,13 +92,13 @@ export async function getLocationById(id) {
 export async function updateLocation(formData) {
   const id = formData.get('id');
   const pm_name = formData.get('pm_name');
+  const client = formData.get('client');           // <--- NEW
+  const shop_name = formData.get('shop_name');     // <--- NEW
   const address = formData.get('address');
   const city = formData.get('city');
   const comment = formData.get('comment');
   const phone = formData.get('phone');
 
-  // Optional: Re-geocode if the address changed. 
-  // For simplicity, we'll re-geocode every time here, but you could check if address changed.
   const searchParams = `${address}, ${city}`;
   const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchParams)}`, {
     headers: { 'User-Agent': 'PmMapApp/1.0' }
@@ -113,11 +112,12 @@ export async function updateLocation(formData) {
   }
 
   try {
+    // Added client and shop_name to SQL
     await db.execute({
       sql: `UPDATE locations 
-            SET pm_name=?, address=?, city=?, latitude=?, longitude=?, comment=?, phone=?
+            SET pm_name=?, client=?, shop_name=?, address=?, city=?, latitude=?, longitude=?, comment=?, phone=?
             WHERE id=?`,
-      args: [pm_name, address, city, lat, lon, comment, phone, id]
+      args: [pm_name, client, shop_name, address, city, lat, lon, comment, phone, id]
     });
   } catch (e) {
     console.error(e);
@@ -126,10 +126,9 @@ export async function updateLocation(formData) {
 
   revalidatePath('/');
   revalidatePath('/manage');
-  redirect('/manage'); // Go back to list after save
+  redirect('/manage');
 }
 
-// 4. Delete a location
 export async function deleteLocation(formData) {
   const id = formData.get('id');
   await db.execute({
@@ -140,3 +139,4 @@ export async function deleteLocation(formData) {
   revalidatePath('/');
   revalidatePath('/manage');
 }
+

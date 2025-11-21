@@ -1,6 +1,6 @@
-import { addLocation, getLocations, getUniquePMs } from './actions';
+import { addLocation, getLocations, getUniquePMs, getAllLocations } from './actions'; // <--- 1. Upewnij się, że importujesz getAllLocations
 import MapWrapper from './components/MapWrapper';
-import PMFilter from './components/PMFilter'; // <--- Import the new component
+import PMFilter from './components/PMFilter';
 import Link from 'next/link';
 
 const PM_LIST = ['Igor Panchuk', 'Aleksander Brzozowski'];
@@ -9,7 +9,14 @@ export default async function Home({ searchParams }) {
   const resolvedParams = await searchParams;
   const selectedPM = resolvedParams?.pm || '';
 
-  const locations = selectedPM ? await getLocations(selectedPM) : [];
+  // 2. POPRAWIONA LOGIKA: Obsługa "all" vs konkretny PM
+  let locations = [];
+  if (selectedPM === 'all') {
+    locations = await getAllLocations();
+  } else if (selectedPM) {
+    locations = await getLocations(selectedPM);
+  }
+
   const existingPMs = await getUniquePMs();
 
   // Combine lists on the server
@@ -18,12 +25,13 @@ export default async function Home({ searchParams }) {
   return (
     <main className="p-1 max-w-4xl mx-auto bg-white text-black dark:bg-zinc-900 dark:text-white min-h-screen">
       
-      <div className="relative mb-8">
-        <div className="absolute right-0 top-0">
-          <Link href="/manage" className="text-sm text-white-600 underline hover:text-white-800">
-            Zarządzaj adresami &rarr;
-          </Link>
-        </div>
+      <div className="relative mb-8 flex justify-end gap-4 pt-4">
+        <Link href="/clients" className="text-sm font-medium text-white-600 hover:underline">
+          📂 Lista Klientów
+        </Link>
+        <Link href="/manage" className="text-sm font-medium text-white-600 hover:text-white-800 hover:underline">
+          Zarządzaj adresami &rarr;
+        </Link>
       </div>
 
       <div className="grid md:grid-cols-2 gap-12">
@@ -31,7 +39,6 @@ export default async function Home({ searchParams }) {
         {/* LEFT COLUMN: FORM */}
         <div className="bg-gray-50 dark:bg-zinc-800 p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">Dodaj nowy adres</h2>
-          {/* The Server Action <form> is fine here because it doesn't use inline event handlers */}
           <form action={addLocation} className="flex flex-col gap-4">
 
             <label className="block">
@@ -42,7 +49,17 @@ export default async function Home({ searchParams }) {
               </select>
             </label>
 
-            {/* NEW: City Field */}
+            <label className="block">
+              <span className="text-sm font-medium">Klient</span>
+              <input type="text" name="client" className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" required />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-medium">Nazwa punktu</span>
+              {/* 3. POPRAWKA: Tutaj było name="client", zmieniono na "shop_name" */}
+              <input type="text" name="shop_name" className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" required />
+            </label>
+
             <label className="block">
               <span className="text-sm font-medium">Miasto</span>
               <input type="text" name="city" className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" required />
@@ -73,18 +90,19 @@ export default async function Home({ searchParams }) {
         <div className="bg-gray-50 dark:bg-zinc-800 p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">Zobacz adresy</h2>
 
-          {/* Replaced the old <form> with the Client Component */}
           <PMFilter pms={allPMs} />
 
           {selectedPM ? (
             locations.length > 0 ? (
               <MapWrapper locations={locations} />
             ) : (
-              <p className="text-gray-500 italic">Nie znaleziono adresów dla {selectedPM}.</p>
+              <p className="text-gray-500 italic">
+                 {selectedPM === 'all' ? 'Nie znaleziono żadnych adresów.' : `Nie znaleziono adresów dla ${selectedPM}.`}
+              </p>
             )
           ) : (
             <div className="h-[400px] bg-gray-200 rounded flex items-center justify-center text-gray-500">
-              Wybierz managera
+              Wybierz managera lub "Pokaż wszystkich"
             </div>
           )}
         </div>

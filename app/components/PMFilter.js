@@ -17,7 +17,6 @@ export default function PMFilter({ pms }) {
       params.delete('pm');
     }
     
-    // This pushes the new URL, triggering the page to reload with new data
     router.push(`/?${params.toString()}`);
   };
 
@@ -29,6 +28,9 @@ export default function PMFilter({ pms }) {
         className="flex-1 p-2 border rounded dark:bg-zinc-700"
       >
         <option value="">Wybierz managera aby zobaczyć...</option>
+        {/* 👇 New Option for All */}
+        <option value="all">Wszyscy</option>
+        <hr />
         {pms.map((pm) => (
           <option key={pm} value={pm}>
             {pm}

@@ -35,6 +35,28 @@ export default async function EditPage({ params }) {
         </label>
 
         <label className="block">
+          <span className="text-sm font-medium">Klient</span>
+          <input 
+            type="text" 
+            name="client" 
+            defaultValue={location.client}
+            className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" 
+            required 
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-medium">Nazwa punktu</span>
+          <input 
+            type="text" 
+            name="shop_name" 
+            defaultValue={location.shop_name}
+            className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" 
+            required 
+          />
+        </label>
+
+        <label className="block">
           <span className="text-sm font-medium">Miasto</span>
           <input 
             type="text" 
