@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import { getAllLocations, deleteLocation } from '../actions';
 
+// 👇 TO JEST KLUCZOWE DLA LISTY
+export const dynamic = 'force-dynamic';
+
 export default async function ManagePage() {
   const locations = await getAllLocations();
 
