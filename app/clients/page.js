@@ -1,6 +1,11 @@
 import Link from 'next/link';
 import { getAllLocations } from '../actions';
 import ExportButton from '../components/ExportButton';
+import { Metadata } from 'next';
+
+export const metadata = {
+  title: 'Klienci',
+};
 
 export const dynamic = 'force-dynamic';
 

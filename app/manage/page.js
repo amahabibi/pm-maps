@@ -1,5 +1,10 @@
 import Link from 'next/link';
 import { getAllLocations, deleteLocation } from '../actions';
+import { Metadata } from 'next';
+
+export const metadata = {
+  title: 'Zarządzaj adresami',
+};
 
 // 👇 TO JEST KLUCZOWE DLA LISTY
 export const dynamic = 'force-dynamic';

@@ -2,8 +2,12 @@ import { addLocation, getLocations, getUniquePMs, getAllLocations } from './acti
 import MapWrapper from './components/MapWrapper';
 import PMFilter from './components/PMFilter';
 import Link from 'next/link';
-
 const PM_LIST = ['Igor Panchuk', 'Aleksander Brzozowski'];
+
+
+export const metadata = {
+  title: 'Mapa punktów',
+};
 
 export default async function Home({ searchParams }) {
   const resolvedParams = await searchParams;

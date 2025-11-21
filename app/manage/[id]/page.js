@@ -3,6 +3,15 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
+export async function generateMetadata({ params }) {
+  const {id} = await params;
+  const location = await getLocationById(id);
+  
+  return {
+    title: `Edytuj punkt${location ? ': ' + location.shop_name : 'Nie znaleziono'}`,
+  }
+}
+
 export default async function EditPage({ params }) {
   // Await params before accessing properties
   const { id } = await params;
