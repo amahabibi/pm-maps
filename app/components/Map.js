@@ -57,7 +57,9 @@ export default function Map({ locations }) {
         {locations.map((loc) => (
           <Marker key={loc.id} position={[loc.latitude, loc.longitude]}>
             <Popup>
-              {/* 👇 Show Shop Name prominently */}
+              <div className="text-xs text-gray-400 mb-1">
+                Dodano: {loc.created_at ? new Date(loc.created_at).toLocaleDateString() : 'n/a'}
+              </div>
               <strong className="text-lg">{loc.shop_name}</strong><br />
               {/* 👇 Show Client */}
               <span className="text-xs font-bold text-gray-500 uppercase">{loc.client}</span>

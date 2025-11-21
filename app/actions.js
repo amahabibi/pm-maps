@@ -6,8 +6,8 @@ import { redirect } from 'next/navigation';
 
 export async function addLocation(formData) {
   const pm_name = formData.get('pm_name');
-  const client = formData.get('client');           // <--- NEW
-  const shop_name = formData.get('shop_name');     // <--- NEW
+  const client = formData.get('client');
+  const shop_name = formData.get('shop_name');
   const address = formData.get('address');
   const city = formData.get('city');
   const comment = formData.get('comment');
@@ -27,12 +27,15 @@ export async function addLocation(formData) {
   const lat = geoData[0].lat;
   const lon = geoData[0].lon;
 
+  // 👇 Generate current timestamp
+  const created_at = new Date().toISOString();
+
   try {
-    // Added client and shop_name to SQL
+    // 👇 Add created_at to INSERT
     await db.execute({
-      sql: `INSERT INTO locations (pm_name, client, shop_name, address, city, latitude, longitude, comment, phone)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      args: [pm_name, client, shop_name, address, city, lat, lon, comment, phone]
+      sql: `INSERT INTO locations (pm_name, client, shop_name, address, city, latitude, longitude, comment, phone, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [pm_name, client, shop_name, address, city, lat, lon, comment, phone, created_at]
     });
   } catch (e) {
     console.error("Database Error:", e);
@@ -64,6 +67,7 @@ export async function getUniquePMs() {
 
 export async function getAllLocations() {
   try {
+    // 👇 Ensure we select everything (created_at is included in *)
     const result = await db.execute('SELECT * FROM locations ORDER BY created_at DESC');
     return JSON.parse(JSON.stringify(result.rows));
   } catch (e) {

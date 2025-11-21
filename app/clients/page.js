@@ -1,14 +1,26 @@
 import Link from 'next/link';
 import { getAllLocations } from '../actions';
-import ExportButton from '../components/ExportButton'; // <--- IMPORT
+import ExportButton from '../components/ExportButton';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ClientsPage() {
   const locations = await getAllLocations();
 
-  // Sortowanie alfabetyczne po kliencie
+  // Sort by Client Name
   locations.sort((a, b) => (a.client || '').localeCompare(b.client || ''));
+
+  // 👇 Helper to format date
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('pl-PL', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   return (
     <main className="p-4 max-w-7xl mx-auto bg-white text-black dark:bg-zinc-900 dark:text-white min-h-screen">
@@ -16,7 +28,6 @@ export default async function ClientsPage() {
         <h1 className="text-3xl font-bold">Lista Klientów i Punktów</h1>
         
         <div className="flex flex-wrap items-center gap-4">
-          {/* 👇 NOWY PRZYCISK */}
           <ExportButton data={locations} />
 
           <Link href="/" className="text-blue-600 hover:underline">
@@ -32,12 +43,13 @@ export default async function ClientsPage() {
         <table className="w-full text-left border-collapse bg-white dark:bg-zinc-800">
           <thead className="bg-gray-100 dark:bg-zinc-700 uppercase text-xs font-semibold text-gray-700 dark:text-gray-200">
             <tr>
+              <th className="p-4 border-b dark:border-zinc-600">Data dodania</th>
               <th className="p-4 border-b dark:border-zinc-600">Klient</th>
               <th className="p-4 border-b dark:border-zinc-600">Nazwa Punktu</th>
-              <th className="p-4 border-b dark:border-zinc-600">Manager (PM)</th>
+              <th className="p-4 border-b dark:border-zinc-600">Manager</th>
               <th className="p-4 border-b dark:border-zinc-600">Miasto</th>
               <th className="p-4 border-b dark:border-zinc-600">Adres</th>
-              <th className="p-4 border-b dark:border-zinc-600">Kontakt</th>
+              <th className="p-4 border-b dark:border-zinc-600">Telefon</th>
             </tr>
           </thead>
           <tbody className="text-sm">
@@ -47,6 +59,9 @@ export default async function ClientsPage() {
                   key={loc.id} 
                   className="border-b dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-700 transition"
                 >
+                  <td className="p-4 text-xs text-gray-500">
+                    {formatDate(loc.created_at)} {/* 👈 Display Date */}
+                  </td>
                   <td className="p-4 font-bold text-blue-600 dark:text-blue-400">
                     {loc.client || '-'}
                   </td>
@@ -65,7 +80,7 @@ export default async function ClientsPage() {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="p-8 text-center text-gray-500">
+                <td colSpan="7" className="p-8 text-center text-gray-500">
                   Brak danych do wyświetlenia.
                 </td>
               </tr>
