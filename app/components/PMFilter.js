@@ -28,7 +28,7 @@ export default function PMFilter({ pms }) {
         onChange={handleChange}
         className="flex-1 p-2 border rounded dark:bg-zinc-700"
       >
-        <option value="">Select a PM to filter...</option>
+        <option value="">Wybierz managera aby zobaczyć...</option>
         {pms.map((pm) => (
           <option key={pm} value={pm}>
             {pm}

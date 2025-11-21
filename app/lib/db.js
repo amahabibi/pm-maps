@@ -1,19 +1,8 @@
-import Database from 'better-sqlite3';
+import { createClient } from '@libsql/client';
 
-const db = new Database('pm-maps.db');
-
-// Create the table if it doesn't exist
-db.exec(`
-  CREATE TABLE IF NOT EXISTS locations (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    pm_name TEXT,
-    address TEXT,
-    latitude REAL,
-    longitude REAL,
-    comment TEXT,
-    phone TEXT,
-    created_at DATETIME DEFAULT CURRENT_TZIMESTAMP
-  )
-`);
+const db = createClient({
+  url: process.env.TURSO_DATABASE_URL,
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
 
 export default db;

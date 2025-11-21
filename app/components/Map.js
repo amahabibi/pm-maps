@@ -65,6 +65,7 @@ export default function Map({ locations }) {
             <Popup>
               <strong>{loc.pm_name}</strong><br />
               {loc.address}<br />
+              {loc.city && <span className="text-sm font-semibold">{loc.city}<br /></span>}
               {loc.phone}<br />
               <em className="text-sm text-gray-600">{loc.comment}</em>
             </Popup>
