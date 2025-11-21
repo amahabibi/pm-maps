@@ -1,6 +1,8 @@
 import { getLocationById, updateLocation } from '../../actions';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function EditPage({ params }) {
   // Await params before accessing properties
   const { id } = await params;
