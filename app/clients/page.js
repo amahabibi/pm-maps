@@ -1,23 +1,28 @@
 import Link from 'next/link';
 import { getAllLocations } from '../actions';
+import ExportButton from '../components/ExportButton'; // <--- IMPORT
 
 export const dynamic = 'force-dynamic';
 
 export default async function ClientsPage() {
   const locations = await getAllLocations();
 
-  // Optional: Sort by Client Name alphabetically
+  // Sortowanie alfabetyczne po kliencie
   locations.sort((a, b) => (a.client || '').localeCompare(b.client || ''));
 
   return (
     <main className="p-4 max-w-7xl mx-auto bg-white text-black dark:bg-zinc-900 dark:text-white min-h-screen">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <h1 className="text-3xl font-bold">Lista Klientów i Punktów</h1>
-        <div className="flex gap-4">
+        
+        <div className="flex flex-wrap items-center gap-4">
+          {/* 👇 NOWY PRZYCISK */}
+          <ExportButton data={locations} />
+
           <Link href="/" className="text-blue-600 hover:underline">
             ← Wróć do Mapy
           </Link>
-          <Link href="/manage" className="text-blue-600 hover:underline">
+          <Link href="/manage" className="bg-gray-100 dark:bg-zinc-700 px-3 py-2 rounded text-blue-600 hover:underline">
             Zarządzaj (Edycja) →
           </Link>
         </div>
