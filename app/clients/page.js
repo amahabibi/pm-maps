@@ -51,6 +51,7 @@ export default async function ClientsPage() {
               <th className="p-4 border-b dark:border-zinc-600">Data dodania</th>
               <th className="p-4 border-b dark:border-zinc-600">Klient</th>
               <th className="p-4 border-b dark:border-zinc-600">Nazwa Punktu</th>
+              <th className="p-4 border-b dark:border-zinc-600">Email</th>
               <th className="p-4 border-b dark:border-zinc-600">Manager</th>
               <th className="p-4 border-b dark:border-zinc-600">Miasto</th>
               <th className="p-4 border-b dark:border-zinc-600">Adres</th>
@@ -72,6 +73,9 @@ export default async function ClientsPage() {
                   </td>
                   <td className="p-4 font-medium">
                     {loc.shop_name || '-'}
+                  </td>
+                  <td className="p-4 text-blue-600 hover:underline">
+                    {loc.email ? <a href={`mailto:${loc.email}`}>{loc.email}</a> : '-'}
                   </td>
                   <td className="p-4">
                     <span className="bg-gray-200 dark:bg-zinc-600 px-2 py-1 rounded text-xs">

@@ -5,9 +5,10 @@ import * as XLSX from 'xlsx';
 export default function ExportButton({ data }) {
   const handleExport = () => {
     const exportData = data.map(item => ({
-      "Data Dodania": item.created_at ? new Date(item.created_at).toLocaleDateString('pl-PL') : '', // 👈 NEW
+      "Data Dodania": item.created_at ? new Date(item.created_at).toLocaleDateString('pl-PL') : '',
       "Klient": item.client || '',
       "Nazwa Punktu": item.shop_name || '',
+      "Email": item.email || '', // 👈 NOWE POLE
       "Manager (PM)": item.pm_name || '',
       "Miasto": item.city || '',
       "Adres": item.address || '',

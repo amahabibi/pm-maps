@@ -12,9 +12,10 @@ export async function addLocation(formData) {
   const city = formData.get('city');
   const comment = formData.get('comment');
   const phone = formData.get('phone');
+  const email = formData.get('email');
 
-  const searchParams = `${address}, ${city}`; 
-  
+  const searchParams = `${address}, ${city}`;
+
   const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchParams)}`, {
     headers: { 'User-Agent': 'PmMapApp/1.0' }
   });
@@ -33,9 +34,9 @@ export async function addLocation(formData) {
   try {
     // 👇 Add created_at to INSERT
     await db.execute({
-      sql: `INSERT INTO locations (pm_name, client, shop_name, address, city, latitude, longitude, comment, phone, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      args: [pm_name, client, shop_name, address, city, lat, lon, comment, phone, created_at]
+      sql: `INSERT INTO locations (pm_name, client, shop_name, email, address, city, latitude, longitude, comment, phone, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [pm_name, client, shop_name, email, address, city, lat, lon, comment, phone, created_at]
     });
   } catch (e) {
     console.error("Database Error:", e);
@@ -49,7 +50,7 @@ export async function addLocation(formData) {
 // Keep the plain object fix we added earlier!
 export async function getLocations(pmName) {
   if (!pmName) return [];
-  
+
   const result = await db.execute({
     sql: 'SELECT * FROM locations WHERE pm_name = ?',
     args: [pmName]
@@ -82,9 +83,9 @@ export async function getLocationById(id) {
       sql: 'SELECT * FROM locations WHERE id = ?',
       args: [id]
     });
-    
+
     if (result.rows.length === 0) return null;
-    
+
     // POPRAWKA: Tutaj też czyścimy obiekt
     return JSON.parse(JSON.stringify(result.rows[0]));
   } catch (e) {
@@ -95,6 +96,7 @@ export async function getLocationById(id) {
 // 3. Update an existing location
 export async function updateLocation(formData) {
   const id = formData.get('id');
+  const email = formData.get('email');
   const pm_name = formData.get('pm_name');
   const client = formData.get('client');           // <--- NEW
   const shop_name = formData.get('shop_name');     // <--- NEW
@@ -108,7 +110,7 @@ export async function updateLocation(formData) {
     headers: { 'User-Agent': 'PmMapApp/1.0' }
   });
   const geoData = await geoRes.json();
-  
+
   let lat = 0, lon = 0;
   if (geoData && geoData.length > 0) {
     lat = geoData[0].lat;
@@ -119,9 +121,9 @@ export async function updateLocation(formData) {
     // Added client and shop_name to SQL
     await db.execute({
       sql: `UPDATE locations 
-            SET pm_name=?, client=?, shop_name=?, address=?, city=?, latitude=?, longitude=?, comment=?, phone=?
+            SET pm_name=?, client=?, shop_name=?, email=?, address=?, city=?, latitude=?, longitude=?, comment=?, phone=?
             WHERE id=?`,
-      args: [pm_name, client, shop_name, address, city, lat, lon, comment, phone, id]
+      args: [pm_name, client, shop_name, email, address, city, lat, lon, comment, phone, id] // Pamiętaj o lat/lon jeśli je aktualizujesz
     });
   } catch (e) {
     console.error(e);
@@ -139,7 +141,7 @@ export async function deleteLocation(formData) {
     sql: 'DELETE FROM locations WHERE id = ?',
     args: [id]
   });
-  
+
   revalidatePath('/');
   revalidatePath('/manage');
 }

@@ -85,6 +85,11 @@ export default function Map({ locations }) {
               
               <strong>{loc.pm_name}</strong><br />
               {loc.city && <span className="font-semibold">{loc.city}, </span>}
+              {loc.email && (
+                <span className="block mt-1 text-blue-600">
+                  ✉️ <a href={`mailto:${loc.email}`} className="hover:underline">{loc.email}</a>
+                </span>
+              )}
               {loc.address}<br />
               
               {loc.phone && <span className="block mt-1">📞 {loc.phone}</span>}
