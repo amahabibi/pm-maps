@@ -6,9 +6,10 @@ export default function ExportButton({ data }) {
   const handleExport = () => {
     const exportData = data.map(item => ({
       "Data Dodania": item.created_at ? new Date(item.created_at).toLocaleDateString('pl-PL') : '',
+      "Status": item.status || 'Pracuję', // 👈 NOWE POLE STATUS
       "Klient": item.client || '',
       "Nazwa Punktu": item.shop_name || '',
-      "Email": item.email || '', // 👈 NOWE POLE
+      "Email": item.email || '',
       "Manager (PM)": item.pm_name || '',
       "Miasto": item.city || '',
       "Adres": item.address || '',
