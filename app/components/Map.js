@@ -9,14 +9,14 @@ import 'leaflet-defaulticon-compatibility';
 // Helper component to redraw map when size changes
 function MapResizer({ isFullscreen }) {
   const map = useMap();
-  
+
   useEffect(() => {
     const timer = setTimeout(() => {
-       map.invalidateSize();
+      map.invalidateSize();
     }, 300);
     return () => clearTimeout(timer);
   }, [isFullscreen, map]);
-  
+
   return null;
 }
 
@@ -40,15 +40,15 @@ export default function Map({ locations }) {
   }, [isFullscreen]);
 
   // Default center
-  const center = locations.length > 0 
-    ? [locations[0].latitude, locations[0].longitude] 
-    : [51.505, -0.09]; 
+  const center = locations.length > 0
+    ? [locations[0].latitude, locations[0].longitude]
+    : [51.505, -0.09];
 
   return (
-    <div 
+    <div
       className={
-        isFullscreen 
-          ? "fixed inset-0 z-50 h-screen w-screen bg-gray-100" 
+        isFullscreen
+          ? "fixed inset-0 z-50 h-screen w-screen bg-gray-100"
           : "relative w-full h-[400px] rounded-lg overflow-hidden"
       }
     >
@@ -60,10 +60,10 @@ export default function Map({ locations }) {
         {isFullscreen ? 'Exit Fullscreen (Esc)' : '⛶ Fullscreen'}
       </button>
 
-      <MapContainer 
-        center={center} 
-        zoom={13} 
-        style={{ height: '100%', width: '100%' }} 
+      <MapContainer
+        center={center}
+        zoom={13}
+        style={{ height: '100%', width: '100%' }}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -81,8 +81,8 @@ export default function Map({ locations }) {
 
               <strong className="text-lg">{loc.shop_name}</strong><br />
               <span className="text-xs font-bold text-gray-500 uppercase">{loc.client}</span>
-              <hr className="my-1 border-gray-300"/>
-              
+              <hr className="my-1 border-gray-300" />
+
               <strong>{loc.pm_name}</strong><br />
               {loc.city && <span className="font-semibold">{loc.city}, </span>}
               {loc.email && (
@@ -91,9 +91,14 @@ export default function Map({ locations }) {
                 </span>
               )}
               {loc.address}<br />
-              
+
               {loc.phone && <span className="block mt-1">📞 {loc.phone}</span>}
               {loc.comment && <em className="block mt-1 text-gray-600 border-l-2 border-gray-300 pl-2">{loc.comment}</em>}
+              <span className={`text-xs font-bold uppercase px-2 py-0.5 rounded ${loc.status === 'Nie pracuję' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                }`}>
+                {loc.status || 'Pracuję'}
+              </span>
+              <hr className="my-1 border-gray-300" />
             </Popup>
           </Marker>
         ))}

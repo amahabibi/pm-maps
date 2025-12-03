@@ -4,7 +4,8 @@ import db from './lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-export async function addLocation(formData) {
+// 👇 Zaktualizowana funkcja addLocation
+export async function addLocation(prevState, formData) {
   const pm_name = formData.get('pm_name');
   const client = formData.get('client');
   const shop_name = formData.get('shop_name');
@@ -13,6 +14,9 @@ export async function addLocation(formData) {
   const comment = formData.get('comment');
   const phone = formData.get('phone');
   const email = formData.get('email');
+  
+  // 👇 Pobieramy status (domyślnie 'Pracuję' jeśli puste)
+  const status = formData.get('status') || 'Pracuję';
 
   const searchParams = `${address}, ${city}`;
 
@@ -22,43 +26,38 @@ export async function addLocation(formData) {
   const geoData = await geoRes.json();
 
   if (!geoData || geoData.length === 0) {
-    return { error: 'Could not find coordinates for this address.' };
+    return { error: 'Nie znaleziono współrzędnych dla tego adresu. Sprawdź miasto i ulicę.' };
   }
 
   const lat = geoData[0].lat;
   const lon = geoData[0].lon;
-
-  // 👇 Generate current timestamp
   const created_at = new Date().toISOString();
 
   try {
-    // 👇 Add created_at to INSERT
+    // 👇 Dodano 'status' do zapytania SQL
     await db.execute({
-      sql: `INSERT INTO locations (pm_name, client, shop_name, email, address, city, latitude, longitude, comment, phone, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      args: [pm_name, client, shop_name, email, address, city, lat, lon, comment, phone, created_at]
+      sql: `INSERT INTO locations (pm_name, client, shop_name, email, address, city, latitude, longitude, comment, phone, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [pm_name, client, shop_name, email, address, city, lat, lon, comment, phone, status, created_at]
     });
   } catch (e) {
     console.error("Database Error:", e);
-    return { error: "Failed to save location" };
+    return { error: "Błąd zapisu do bazy danych." };
   }
 
   revalidatePath('/');
-  return { success: true };
+  return { success: true, message: 'Punkt został dodany pomyślnie!' };
 }
 
-// Keep the plain object fix we added earlier!
+// ... funkcje getLocations, getUniquePMs, getAllLocations, getLocationById bez zmian ...
+
 export async function getLocations(pmName) {
   if (!pmName) return [];
-
   const result = await db.execute({
     sql: 'SELECT * FROM locations WHERE pm_name = ?',
     args: [pmName]
   });
-
-  return result.rows.map((row) => ({
-    ...row
-  }));
+  return result.rows.map((row) => ({ ...row }));
 }
 
 export async function getUniquePMs() {
@@ -68,11 +67,10 @@ export async function getUniquePMs() {
 
 export async function getAllLocations() {
   try {
-    // 👇 Ensure we select everything (created_at is included in *)
     const result = await db.execute('SELECT * FROM locations ORDER BY created_at DESC');
     return JSON.parse(JSON.stringify(result.rows));
   } catch (e) {
-    console.error("Błąd pobierania lokalizacji:", e);
+    console.error("Błąd:", e);
     return [];
   }
 }
@@ -83,27 +81,27 @@ export async function getLocationById(id) {
       sql: 'SELECT * FROM locations WHERE id = ?',
       args: [id]
     });
-
     if (result.rows.length === 0) return null;
-
-    // POPRAWKA: Tutaj też czyścimy obiekt
     return JSON.parse(JSON.stringify(result.rows[0]));
   } catch (e) {
     return null;
   }
 }
 
-// 3. Update an existing location
+// 👇 Zaktualizowana funkcja updateLocation
 export async function updateLocation(formData) {
   const id = formData.get('id');
   const email = formData.get('email');
   const pm_name = formData.get('pm_name');
-  const client = formData.get('client');           // <--- NEW
-  const shop_name = formData.get('shop_name');     // <--- NEW
+  const client = formData.get('client');
+  const shop_name = formData.get('shop_name');
   const address = formData.get('address');
   const city = formData.get('city');
   const comment = formData.get('comment');
   const phone = formData.get('phone');
+  
+  // 👇 Pobieramy status
+  const status = formData.get('status');
 
   const searchParams = `${address}, ${city}`;
   const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchParams)}`, {
@@ -118,12 +116,12 @@ export async function updateLocation(formData) {
   }
 
   try {
-    // Added client and shop_name to SQL
+    // 👇 Dodano status=? do UPDATE
     await db.execute({
       sql: `UPDATE locations 
-            SET pm_name=?, client=?, shop_name=?, email=?, address=?, city=?, latitude=?, longitude=?, comment=?, phone=?
+            SET pm_name=?, client=?, shop_name=?, email=?, address=?, city=?, latitude=?, longitude=?, comment=?, phone=?, status=?
             WHERE id=?`,
-      args: [pm_name, client, shop_name, email, address, city, lat, lon, comment, phone, id] // Pamiętaj o lat/lon jeśli je aktualizujesz
+      args: [pm_name, client, shop_name, email, address, city, lat, lon, comment, phone, status, id]
     });
   } catch (e) {
     console.error(e);
@@ -141,8 +139,6 @@ export async function deleteLocation(formData) {
     sql: 'DELETE FROM locations WHERE id = ?',
     args: [id]
   });
-
   revalidatePath('/');
   revalidatePath('/manage');
 }
-

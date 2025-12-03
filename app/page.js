@@ -1,9 +1,10 @@
-import { addLocation, getLocations, getUniquePMs, getAllLocations } from './actions'; // <--- 1. Upewnij się, że importujesz getAllLocations
+import { getLocations, getUniquePMs, getAllLocations } from './actions';
 import MapWrapper from './components/MapWrapper';
 import PMFilter from './components/PMFilter';
+import AddLocationForm from './components/AddLocationForm'; // 👈 Importujemy nowy komponent
 import Link from 'next/link';
-const PM_LIST = ['Igor Panchuk', 'Aleksander Brzozowski'];
 
+const PM_LIST = ['Igor Panchuk', 'Aleksander Brzozowski'];
 
 export const metadata = {
   title: 'Mapa punktów',
@@ -13,7 +14,6 @@ export default async function Home({ searchParams }) {
   const resolvedParams = await searchParams;
   const selectedPM = resolvedParams?.pm || '';
 
-  // 2. POPRAWIONA LOGIKA: Obsługa "all" vs konkretny PM
   let locations = [];
   if (selectedPM === 'all') {
     locations = await getAllLocations();
@@ -22,8 +22,6 @@ export default async function Home({ searchParams }) {
   }
 
   const existingPMs = await getUniquePMs();
-
-  // Combine lists on the server
   const allPMs = [...new Set([...PM_LIST, ...existingPMs])].sort();
 
   return (
@@ -43,56 +41,10 @@ export default async function Home({ searchParams }) {
         {/* LEFT COLUMN: FORM */}
         <div className="bg-gray-50 dark:bg-zinc-800 p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">Dodaj nowy adres</h2>
-          <form action={addLocation} className="flex flex-col gap-4">
-
-            <label className="block">
-              <span className="text-sm font-medium">Manager</span>
-              <select name="pm_name" className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" required>
-                <option value="" disabled defaultValue>Wybierz z listy</option>
-                {PM_LIST.map(pm => <option key={pm} value={pm}>{pm}</option>)}
-              </select>
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-medium">Klient</span>
-              <input type="text" name="client" className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" required />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-medium">Nazwa punktu</span>
-              {/* 3. POPRAWKA: Tutaj było name="client", zmieniono na "shop_name" */}
-              <input type="text" name="shop_name" className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" required />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-medium">Email</span>
-              <input type="email" name="email" className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-medium">Miasto</span>
-              <input type="text" name="city" className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" required />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-medium">Adres</span>
-              <input type="text" name="address"  className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" required />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-medium">Telefon</span>
-              <input type="tel" name="phone" className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-medium">Notatka</span>
-              <textarea name="comment" className="mt-1 block w-full p-2 border rounded dark:bg-zinc-700" rows="3"></textarea>
-            </label>
-
-            <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
-              Zapisz
-            </button>
-          </form>
+          
+          {/* 👇 Tutaj używamy nowego komponentu */}
+          <AddLocationForm pmList={PM_LIST} />
+          
         </div>
 
         {/* RIGHT COLUMN: MAP VIEW */}
